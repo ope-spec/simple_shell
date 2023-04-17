@@ -10,9 +10,15 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 
 #define END_OF_FILE -2
 #define EXIT -3
+#define MAX_INPUT_SIZE 1024
+#define MAX_WORDS 100
+#define PATH_MAX_LEN 4096
+#define MAX_DIRS 1024
+#define MAX_PATH 1024
 
 extern char **environ;
 char *name;
@@ -53,17 +59,37 @@ typedef struct alias_s
 	struct alias_s *next;
 } alias_t;
 
+/**
+ * struct path_list_s - singly linked list of directories in PATH
+ * @dir: directory name
+ * @next: pointer to next node in list
+ */
+typedef struct path_list_s
+{
+    char *dir;
+    struct path_list_s *next;
+} path_list_t;
+
+
 alias_t *aliases;
 
 /* Main Helpers */
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+char **split_string(char *string, const char *delimiter);
 char **_strtok(char *line, char *delim);
 char *get_location(char *command);
 list_t *get_path_dir(char *path);
 int execute(char **args, char **front);
 void free_list(list_t *head);
 char *_itoa(int num);
+int main(int argc, char **argv);
+int main(int argc, char **argv, char **env);
+path_list_t *add_node(path_list_t **head, char *dir);
+path_list_t *build_path_list(void);
+int read_input(char *input);
+int parse_input(char *input, char *command);
+
 
 /* Input Helpers */
 void handle_line(char **line, ssize_t read);
@@ -95,11 +121,13 @@ int shellby_unsetenv(char **args, char __attribute__((__unused__)) **front);
 int shellby_cd(char **args, char __attribute__((__unused__)) **front);
 int shellby_alias(char **args, char __attribute__((__unused__)) **front);
 int shellby_help(char **args, char __attribute__((__unused__)) **front);
+int _setenv(const char *name, const char *value, int overwrite);
 
 /*  Builtin Helpers */
 char **_copyenv(void);
 void free_env(void);
 char **_getenv(const char *var);
+char *_getenv(const char *name);
 
 /*  Error Handling */
 int create_error(char **args, int err);
@@ -126,6 +154,8 @@ void help_env(void);
 void help_setenv(void);
 void help_unsetenv(void);
 void help_history(void);
+void print_path_directories(void);
+void execute_command(char *command);
 
 int proc_file_commands(char *file_path, int *exe_ret);
 #endif
