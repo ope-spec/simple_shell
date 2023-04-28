@@ -14,7 +14,7 @@ int shellby_unsetenv(char **args, char __attribute__((__unused__)) **front)
 
 	if (!args[0])
 		return (create_error(args, -101));
-	for (dimension = 0; environment[dimension]; dimension++)
+	for (dimension = 0; n_environment[dimension]; dimension++)
 		;
 	n_enviroment = malloc(sizeof(char *) * dimension);
 	if (!n_enviroment)
