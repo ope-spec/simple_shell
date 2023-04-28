@@ -79,7 +79,7 @@ size_t print_list(const list_t *h)
  * node_starts_with - finds a node whose string starts with prefix
  * @node: pointer to head of the list
  * @prefix: string to match
- * @c: the next character after prefix to match
+ * @o: the next character after prefix to match
  *
  * Return: pointer to the node or NULL if not found.
  */

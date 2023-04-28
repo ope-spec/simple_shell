@@ -103,7 +103,8 @@ int read_history(info_t *inf)
 /**
  * build_history_list - adds entry to a history linked list
  * @inf: Structure containing potential arguments. Used to maintain
- * @buffer: the buffer containing the command string to add to the history list.
+ * @buffer: the buffer containing the command string
+ * to add to the history list.
  * @linecount: the current line number for the command being added.
  *
  * Return: Always 0
