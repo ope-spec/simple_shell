@@ -32,7 +32,7 @@ int write_history(info_t *inf)
 {
 	ssize_t file_descriptor;
 	char *filename = get_history_file(inf);
-	list_t *node = NULL;
+	list_t *new_node = NULL;
 
 	if (!filename)
 		return (-1);
@@ -41,9 +41,9 @@ int write_history(info_t *inf)
 	free(filename);
 	if (file_descriptor == -1)
 		return (-1);
-	for (node = inf->history; node; node = node->next)
+	for (new_node = inf->history; new_node; new_node = new_node->next)
 	{
-		_putsfd(node->str, file_descriptor);
+		_putsfd(new_node->str, file_descriptor);
 		_putfd('\n', file_descriptor);
 	}
 	_putfd(BUF_FLUSH, file_descriptor);
@@ -111,14 +111,14 @@ int read_history(info_t *inf)
  */
 int build_history_list(info_t *inf, char *buffer, int linecount)
 {
-	list_t *node = NULL;
+	list_t *new_node = NULL;
 
 	if (inf->history)
-		node = inf->history;
-	add_node_end(&node, buffer, linecount);
+		new_node = inf->history;
+	add_node_end(&new_node, buffer, linecount);
 
 	if (!inf->history)
-		inf->history = node;
+		inf->history = new_node;
 	return (0);
 }
 
@@ -129,13 +129,13 @@ int build_history_list(info_t *inf, char *buffer, int linecount)
  */
 int renumber_history(info_t *inf)
 {
-	list_t *node = inf->history;
+	list_t *new_node = inf->history;
 	int i = 0;
 
-	while (node)
+	while (new_node)
 	{
-		node->num = i++;
-		node = node->next;
+		new_node->num = i++;
+		new_node = new_node->next;
 	}
 	return (inf->histcount = i);
 }

@@ -10,7 +10,7 @@
 
 char **strtow(char *str, char *d)
 {
-	int i, j, k, o, num = 0;
+	int i, j, k, idx, num = 0;
 	char **s;
 
 	if (str == NULL || str[0] == '\0')
@@ -41,9 +41,9 @@ char **strtow(char *str, char *d)
 			free(s);
 			return (NULL);
 		}
-		for (o = 0; o < k; o++)
-			s[j][o] = str[i++];
-		s[j][o] = '\0';
+		for (idx = 0; idx < k; idx++)
+			s[j][idx] = str[i++];
+		s[j][idx] = '\0';
 	}
 	s[j] = NULL;
 	return (s);
@@ -58,7 +58,7 @@ char **strtow(char *str, char *d)
  */
 char **strtow2(char *str, char d)
 {
-	int i, j, k, o, num = 0;
+	int i, j, k, idx, num = 0;
 	char **s;
 
 	if (str == NULL || str[0] == '\0')
@@ -87,9 +87,9 @@ char **strtow2(char *str, char d)
 			free(s);
 			return (NULL);
 		}
-		for (o = 0; o < k; o++)
-			s[j][o] = str[i++];
-		s[j][o] = '\0';
+		for (idx = 0; idx < k; idx++)
+			s[j][idx] = str[i++];
+		s[j][idx] = '\0';
 	}
 	s[j] = NULL;
 	return (s);

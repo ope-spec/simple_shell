@@ -39,7 +39,7 @@ char *_strdup(const char *str)
 		return (NULL);
 	while (*str++)
 		length++;
-	ret = malloc(sizeof(char) * (length + 1));
+	ret = malloc((length + 1) * sizeof(char));
 	if (!ret)
 		return (NULL);
 	for (length++; length--;)
@@ -56,7 +56,7 @@ void _puts(char *str)
 {
 	int i = 0;
 
-	if (!str)
+	if (str == NULL)
 		return;
 	while (str[i] != '\0')
 	{

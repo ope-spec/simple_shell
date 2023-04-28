@@ -69,7 +69,7 @@ typedef struct liststr
  * @alias: the alias node
  * @env_changed: on if environ was changed
  * @status: the return status of the last exec'd command
- * @cmd_buf: address of pointer to cmd_buf, on if chaining
+ * @cmd_buffer: address of pointer to cmd_buffer, on if chaining
  * @cmd_buf_type: CMD_type ||, &&, ;
  * @readfd: the fd from which to read line input
  * @histcount: the history line number count
@@ -91,7 +91,7 @@ typedef struct passinfo
 	int env_changed;
 	int status;
 
-	char **cmd_buf;
+	char **cmd_buffer;
 	int cmd_buf_type;
 	int readfd;
 	int histcount;
@@ -102,13 +102,13 @@ typedef struct passinfo
 	0, 0, 0}
 
 /**
- * struct builtin- Structure that holds
- * information about a built-in command.
+ * struct builtin- Structure that holds information about
+ * a built-in command.
  * @type: The string representation of the built-in command.
  * @func: A pointer to the function that implements the built-in command.
- * Description: This structure is used to associate a
- * string that represents a built-in command with the
- * function that implements it.
+ * Description: This structure is used to associate a string that
+ * represents a built-in command with the function that
+ * implements it.
  */
 typedef struct builtin
 {
@@ -142,7 +142,7 @@ char *_strncat(char *, char *, int);
 char *_strchr(char *, char);
 char **strtow(char *, char *);
 char **strtow2(char *, char);
-char *_memset(char *, char, unsigned int);
+char *my_memset(char *, int, size_t);
 void ffree(char **);
 void *_realloc(void *, unsigned int, unsigned int);
 int bfree(void **);
@@ -158,7 +158,7 @@ void remove_comments(char *);
 int _myexit(info_t *);
 int _mycd(info_t *);
 int _myhelp(info_t *);
-int _myhistory(info_t *);
+int display_command_history(info_t *inf);
 int _myalias(info_t *);
 ssize_t get_input(info_t *);
 int _getline(info_t *, char **, size_t *);
@@ -194,6 +194,9 @@ void check_chain(info_t *, char *, size_t *, size_t, size_t);
 int replace_alias(info_t *);
 int replace_vars(info_t *);
 int replace_string(char **, char *);
+int _cd(info_t *info);
+int _cd_home(info_t *info);
+int _cd_prev(info_t *info, char *cwd);
 
 #endif /* SHELL_H */
 

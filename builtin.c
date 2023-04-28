@@ -1,12 +1,13 @@
 #include "shell.h"
 
 /**
- * _myhistory - Displays the history list, one command per line, preceded
+ * display_command_history - Displays the history list,
+ * one command per line, preceded
  * with line numbers starting at 0.
  * @inf: Structure containing potential arguments.
  * Return: Always 0
  */
-int _myhistory(info_t *inf)
+int display_command_history(info_t *inf)
 {
 	print_list(inf->history);
 	return (0);
@@ -21,19 +22,19 @@ int _myhistory(info_t *inf)
  */
 int unset_alias(info_t *inf, char *str)
 {
-	char *d, c;
+	char *equals_sign, old_char;
 	int ret;
 
-	d = _strchr(str, '=');
-	if (!d)
+	equals_sign = _strchr(str, '=');
+	if (!equals_sign)
 		return (1);
 
-	c = *d;
-	*d = 0;
+	old_char = *equals_sign;
+	*equals_sign = 0;
 
 	ret = delete_node_at_index(&(inf->alias),
 		get_node_index(inf->alias, node_starts_with(inf->alias, str, -1)));
-	*d = c;
+	*equals_sign = old_char;
 
 	return (ret);
 }
@@ -47,12 +48,12 @@ int unset_alias(info_t *inf, char *str)
  */
 int set_alias(info_t *inf, char *str)
 {
-	char *d;
+	char *equals_sign;
 
-	d = _strchr(str, '=');
-	if (!d)
+	equals_sign = _strchr(str, '=');
+	if (!equals_sign)
 		return (1);
-	if (!*++d)
+	if (!*++equals_sign)
 		return (unset_alias(inf, str));
 
 	unset_alias(inf, str);
@@ -67,15 +68,15 @@ int set_alias(info_t *inf, char *str)
  */
 int print_alias(list_t *node)
 {
-	char *d = NULL, *a = NULL;
+	char *equals_sign = NULL, *a = NULL;
 
 	if (node)
 	{
-		d = _strchr(node->str, '=');
-		for (a = node->str; a <= d; a++)
+		equals_sign = _strchr(node->str, '=');
+		for (a = node->str; a <= equals_sign; a++)
 			_putchar(*a);
 		_putchar('\'');
-		_puts(d + 1);
+		_puts(equals_sign + 1);
 		_puts("'\n");
 		return (0);
 	}
@@ -91,7 +92,7 @@ int print_alias(list_t *node)
 int _myalias(info_t *inf)
 {
 	int i = 0;
-	char *d = NULL;
+	char *equals_sign = NULL;
 	list_t *node = NULL;
 
 	if (inf->argc == 1)
@@ -106,8 +107,8 @@ int _myalias(info_t *inf)
 	}
 	for (i = 1; inf->argv[i]; i++)
 	{
-		d = _strchr(inf->argv[i], '=');
-		if (d)
+		equals_sign = _strchr(inf->argv[i], '=');
+		if (equals_sign)
 			set_alias(inf, inf->argv[i]);
 		else
 			print_alias(node_starts_with(inf->alias, inf->argv[i], '='));

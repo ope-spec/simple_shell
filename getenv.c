@@ -55,24 +55,31 @@ int _mysetenv(info_t *inf)
 }
 
 /**
- * _myunsetenv - Removes an environment variable
- * @inf: Structure containing potential arguments.
- * Return: 0 on success, -1 on failure
+ * _myunsetenv - Unset environment variables.
+ * @info: Structure containing potential arguments.
+ * Return: 0 on success, -1 on failure.
  */
-int _myunsetenv(info_t *inf)
+int _myunsetenv(info_t *info)
 {
 	int i;
 
-	if (inf->argc == 1)
+	if (info->argc < 2)
 	{
 		_eputs("Too few arguments.\n");
 		return (-1);
 	}
-	for (i = 1; i <= inf->argc; i++)
-		_unsetenv(inf, inf->argv[i]);
 
+	for (i = 1; i < info->argc; i++)
+	{
+		if (!_unsetenv(info, info->argv[i]))
+		{
+			_eputs("Failed to unset environment variable.\n");
+			return (-1);
+		}
+	}
 	return (0);
 }
+
 
 /**
  * populate_env_list - Populates a linked list with

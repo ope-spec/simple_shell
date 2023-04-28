@@ -15,20 +15,20 @@ void clear_info(info_t *inf)
 /**
  * set_info - Initializes fields of an info_t struct
  * @inf: Pointer to the info_t struct
- * @av: Argument vector
+ * @argv: Argument vector
  */
-void set_info(info_t *inf, char **av)
+void set_info(info_t *inf, char **argv)
 {
 	int i = 0;
 
-	inf->fname = av[0];
+	inf->fname = argv[0];
 	if (inf->arg)
 	{
 		inf->argv = strtow(inf->arg, " \t");
 		if (!inf->argv)
 		{
 
-			inf->argv = malloc(sizeof(char *) * 2);
+			inf->argv = malloc(2 * sizeof(char *));
 			if (inf->argv)
 			{
 				inf->argv[0] = _strdup(inf->arg);
@@ -57,7 +57,7 @@ void free_info(info_t *inf, int all)
 	inf->path = NULL;
 	if (all)
 	{
-		if (!inf->cmd_buf)
+		if (!inf->cmd_buffer)
 			free(inf->arg);
 		if (inf->env)
 			free_list(&(inf->env));
@@ -67,7 +67,7 @@ void free_info(info_t *inf, int all)
 			free_list(&(inf->alias));
 		ffree(inf->environ);
 			inf->environ = NULL;
-		bfree((void **)inf->cmd_buf);
+		bfree((void **)inf->cmd_buffer);
 		if (inf->readfd > 2)
 			close(inf->readfd);
 		_putchar(BUF_FLUSH);

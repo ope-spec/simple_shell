@@ -1,9 +1,10 @@
 #include "shell.h"
 
 /**
- * _myexit - exits the shell
- * @inf: Structure containing potential arguments.
- * Return: exits with a given exit status
+ * _myexit - Exits the shell
+ * @inf: Structure containing potential arguments
+ *
+ * Return: Exits with a given exit status
  */
 int _myexit(info_t *inf)
 {
@@ -27,54 +28,90 @@ int _myexit(info_t *inf)
 	return (-2);
 }
 
+
 /**
- * _mycd - changes the current directory of the shell process
- * @inf: Structure containing potential arguments.
+ * _cd - changes the current directory of the shell process
+ * @info: Structure containing potential arguments.
  * Return: Always 0
  */
-int _mycd(info_t *inf)
+int _cd(info_t *info)
 {
-	char *s, *dir, buffer[1024];
+	char *cwd, buffer[1024];
 	int new_dir;
 
-	s = getcwd(buffer, 1024);
-	if (!s)
+	cwd = getcwd(buffer, 1024);
+	if (!cwd)
 		_puts("TODO: >>getcwd failure emsg here<<\n");
-	if (!inf->argv[1])
+
+	if (!info->argv[1])
 	{
-		dir = _getenv(inf, "HOME=");
-		if (!dir)
-			new_dir = /* TODO: what should this be? */
-				chdir((dir = _getenv(inf, "PWD=")) ? dir : "/");
-		else
-			new_dir = chdir(dir);
+		new_dir = _cd_home(info);
 	}
-	else if (_strcmp(inf->argv[1], "-") == 0)
+	else if (_strcmp(info->argv[1], "-") == 0)
 	{
-		if (!_getenv(inf, "OLDPWD="))
-		{
-			_puts(s);
-			_putchar('\n');
-			return (1);
-		}
-		_puts(_getenv(inf, "OLDPWD=")), _putchar('\n');
-		new_dir = /* TODO: what should this be? */
-			chdir((dir = _getenv(inf, "OLDPWD=")) ? dir : "/");
+		new_dir = _cd_prev(info, cwd);
 	}
 	else
-		new_dir = chdir(inf->argv[1]);
+	{
+		new_dir = chdir(info->argv[1]);
+	}
+
 	if (new_dir == -1)
 	{
-		print_error(inf, "can't cd to ");
-		_eputs(inf->argv[1]), _eputchar('\n');
+		print_error(info, "can't cd to ");
+		_eputs(info->argv[1]);
+		_putchar('\n');
 	}
 	else
 	{
-		_setenv(inf, "OLDPWD", _getenv(inf, "PWD="));
-		_setenv(inf, "PWD", getcwd(buffer, 1024));
+		_setenv(info, "prev_pwd", _getenv(info, "curr_pwd="));
+		_setenv(info, "curr_pwd", getcwd(buffer, 1024));
 	}
 	return (0);
 }
+
+/**
+ * _cd_home - handles 'cd' without arguments
+ * @info: Structure containing potential arguments.
+ * Return: 0 on success, 1 on error
+ */
+int _cd_home(info_t *info)
+{
+	char *dir;
+
+	dir = _getenv(info, "HOME=");
+	if (!dir)
+	{
+		return (chdir((dir = _getenv(info, "curr_pwd=")) ? dir : "/"));
+	}
+	else
+	{
+		return (chdir(dir));
+	}
+}
+
+/**
+ * _cd_prev - handles 'cd -' command
+ * @info: Structure containing potential arguments.
+ * @cwd: The current working directory.
+ * Return: 0 on success, 1 on error
+ */
+int _cd_prev(info_t *info, char *cwd)
+{
+	char *dir;
+
+	if (!_getenv(info, "prev_pwd="))
+	{
+		_puts(cwd);
+		_putchar('\n');
+		return (1);
+	}
+	_puts(_getenv(info, "prev_pwd="));
+	_putchar('\n');
+	dir = _getenv(info, "prev_pwd=");
+	return (chdir(dir ? dir : "/"));
+}
+
 
 /**
  * _myhelp - displays information about built-in shell commands

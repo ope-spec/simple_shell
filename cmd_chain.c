@@ -5,14 +5,14 @@
  * is a command chain delimiter
  * @inf: the parameter struct
  * @buffer: the charcter buffer.
- * @p: address of current position in buf
+ * @pos: address of current position in buf
  *
  * Return: 1 if the character is a command chain delimiter,
  * 0 otherwise
  */
-int is_chain(info_t *inf, char *buffer, size_t *p)
+int is_chain(info_t *inf, char *buffer, size_t *pos)
 {
-	size_t j = *p;
+	size_t j = *pos;
 
 	if (buffer[j] == '|' && buffer[j + 1] == '|')
 	{
@@ -33,7 +33,7 @@ int is_chain(info_t *inf, char *buffer, size_t *p)
 	}
 	else
 		return (0);
-	*p = j;
+	*pos = j;
 	return (1);
 }
 
@@ -42,15 +42,15 @@ int is_chain(info_t *inf, char *buffer, size_t *p)
  * continue based on the last status
  * @inf: the parameter struct
  * @buffer: pointer to the character buffer
- * @p: address of current position in buffer
+ * @pos: address of current position in buffer
  * @i: starting position in buffer
  * @len: length of buffer
  *
  * Return: Void
  */
-void check_chain(info_t *inf, char *buffer, size_t *p, size_t i, size_t len)
+void check_chain(info_t *inf, char *buffer, size_t *pos, size_t i, size_t len)
 {
-	size_t j = *p;
+	size_t j = *pos;
 
 	if (inf->cmd_buf_type == CMD_AND)
 	{
@@ -69,7 +69,7 @@ void check_chain(info_t *inf, char *buffer, size_t *p, size_t i, size_t len)
 		}
 	}
 
-	*p = j;
+	*pos = j;
 }
 
 /**
@@ -82,7 +82,7 @@ int replace_alias(info_t *inf)
 {
 	int i;
 	list_t *node;
-	char *p;
+	char *pos;
 
 	for (i = 0; i < 10; i++)
 	{
@@ -90,13 +90,13 @@ int replace_alias(info_t *inf)
 		if (!node)
 			return (0);
 		free(inf->argv[0]);
-		p = _strchr(node->str, '=');
-		if (!p)
+		pos = _strchr(node->str, '=');
+		if (!pos)
 			return (0);
-		p = _strdup(p + 1);
-		if (!p)
+		pos = _strdup(pos + 1);
+		if (!pos)
 			return (0);
-		inf->argv[0] = p;
+		inf->argv[0] = pos;
 	}
 	return (1);
 }

@@ -59,15 +59,15 @@ int find_builtin(info_t *inf)
 		{"exit", _myexit},
 		{"env", _myenv},
 		{"help", _myhelp},
-		{"history", _myhistory},
+		{"history", display_command_history},
 		{"setenv", _mysetenv},
 		{"unsetenv", _myunsetenv},
-		{"cd", _mycd},
+		{"cd", _cd},
 		{"alias", _myalias},
 		{NULL, NULL}
 	};
 
-	for (i = 0; builtintbl[i].type; i++)
+	for (i = 0; builtintbl[i].type != NULL; i++)
 		if (_strcmp(inf->argv[0], builtintbl[i].type) == 0)
 		{
 			inf->line_count++;
@@ -78,79 +78,89 @@ int find_builtin(info_t *inf)
 }
 
 /**
- * find_cmd - finds a command in the system PATH environment variable
- * @inf: pointer to the parameter and return info struct
+ * find_cmd - Find the command in the `inf` struct and execute it if found
+ *
+ * @inf: Pointer to the `info_t` struct that contains the command arguments
+ *
  * Return: void
  */
 void find_cmd(info_t *inf)
 {
 	char *path = NULL;
-	int i, k;
+	int i, arg_count = 0;
 
 	inf->path = inf->argv[0];
-	if (inf->linecount_flag == 1)
+
+	if (inf->linecount_flag)
 	{
 		inf->line_count++;
 		inf->linecount_flag = 0;
 	}
-	for (i = 0, k = 0; inf->arg[i]; i++)
+	for (i = 0; inf->arg[i]; i++)
+	{
 		if (!is_delim(inf->arg[i], " \t\n"))
-			k++;
-	if (!k)
+		{
+			arg_count++;
+		}
+	}
+	if (arg_count == 0)
+	{
 		return;
-
+	}
 	path = find_path(inf, _getenv(inf, "PATH="), inf->argv[0]);
-	if (path)
+	if (path != NULL)
 	{
 		inf->path = path;
 		fork_cmd(inf);
+		return;
 	}
-	else
+	if (is_cmd(inf, inf->argv[0]))
 	{
-		if ((interactive(inf) || _getenv(inf, "PATH=")
-			|| inf->argv[0][0] == '/') && is_cmd(inf, inf->argv[0]))
-			fork_cmd(inf);
-		else if (*(inf->arg) != '\n')
-		{
-			inf->status = 127;
-			print_error(inf, "not found\n");
-		}
+		fork_cmd(inf);
+	}
+	else if (*(inf->arg) != '\n')
+	{
+		inf->status = 127;
+		print_error(inf, "not found\n");
 	}
 }
 
+
 /**
- * fork_cmd - forks a an exec thread to run cmd
- * @inf: the parameter & return info struct
- * Return: void
+ * fork_cmd - forks a new process and executes the command.
+ * @inf: pointer to the info_t struct that contains the command arguments.
+ *
+ * Return: void.
  */
 void fork_cmd(info_t *inf)
 {
-	pid_t child_pid;
+pid_t pid;
 
-	child_pid = fork();
-	if (child_pid == -1)
-	{
-		perror("Error:");
-		return;
-	}
-	if (child_pid == 0)
-	{
-		if (execve(inf->path, inf->argv, get_environ(inf)) == -1)
-		{
-			free_info(inf, 1);
-			if (errno == EACCES)
-				exit(126);
-			exit(1);
-		}
-	}
-	else
-	{
-		wait(&(inf->status));
-		if (WIFEXITED(inf->status))
-		{
-			inf->status = WEXITSTATUS(inf->status);
-			if (inf->status == 126)
-				print_error(inf, "Permission denied\n");
-		}
-	}
+pid = fork();
+if (pid == -1)
+{
+perror("fork error");
+return;
 }
+if (pid == 0)
+{
+if (execve(inf->path, inf->argv, get_environ(inf)) == -1)
+{
+free_info(inf, 1);
+if (errno == EACCES)
+exit(126);
+exit(1);
+}
+}
+else
+{
+wait(&(inf->status));
+if (WIFEXITED(inf->status))
+{
+inf->status = WEXITSTATUS(inf->status);
+if (inf->status == 126)
+print_error(inf, "Permission denied\n");
+}
+}
+}
+

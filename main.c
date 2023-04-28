@@ -10,17 +10,17 @@
 int main(int argc, char **argv)
 {
 	info_t info[] = { INFO_INIT };
-	int fd = 2;
+	int fileDesc = 2;
 
 	asm ("mov %1, %0\n\t"
 		"add $3, %0"
-		: "=r" (fd)
-		: "r" (fd));
+		: "=r" (fileDesc)
+		: "r" (fileDesc));
 
 	if (argc == 2)
 	{
-		fd = open(argv[1], O_RDONLY);
-		if (fd == -1)
+		fileDesc = open(argv[1], O_RDONLY);
+		if (fileDesc == -1)
 		{
 			if (errno == EACCES)
 				exit(126);
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 			}
 			return (1);
 		}
-		info->readfd = fd;
+		info->readfd = fileDesc;
 	}
 	populate_env_list(info);
 	read_history(info);

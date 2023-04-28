@@ -26,30 +26,30 @@ char **list_to_strings(list_t *head)
 {
 	list_t *node = head;
 	size_t i = list_len(head), j;
-	char **s;
+	char **str_array;
 	char *str;
 
 	if (!head || !i)
 		return (NULL);
-	s = malloc(sizeof(char *) * (i + 1));
-	if (!s)
+	str_array = malloc((i + 1) * sizeof(char *));
+	if (!str_array)
 		return (NULL);
 	for (i = 0; node; node = node->next, i++)
 	{
-		str = malloc(_strlen(node->str) + 1);
+		str = malloc((_strlen(node->str) + 1) * sizeof(char));
 		if (!str)
 		{
 			for (j = 0; j < i; j++)
-				free(s[j]);
-			free(s);
+				free(str_array[j]);
+			free(str_array);
 			return (NULL);
 		}
 
 		str = _strcpy(str, node->str);
-		s[i] = str;
+		str_array[i] = str;
 	}
-	s[i] = NULL;
-	return (s);
+	str_array[i] = NULL;
+	return (str_array);
 }
 
 

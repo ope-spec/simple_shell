@@ -1,20 +1,22 @@
 #include "shell.h"
 
 /**
- * *_memset - Fills a block of memory with a constant byte.
+ * *my_memset - Fills a block of memory with a constant byte.
  * @s: the pointer to the memory area
  * @byte: The byte to fill the block with.
  * @n: the amount of bytes to be filled
  * Return: (s) a pointer to the memory area s
  */
-char *_memset(char *s, char byte, unsigned int n)
+char *my_memset(char *s, int byte, size_t n)
 {
-	unsigned int i;
+char *p = s;
 
-	for (i = 0; i < n; i++)
-		s[i] = byte;
-	return (s);
+while (n--)
+*p++ = (char)byte;
+
+return (s);
 }
+
 
 /**
  * ffree - Frees a dynamically allocated array of strings.
